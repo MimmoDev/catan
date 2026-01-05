@@ -49,8 +49,16 @@ export default function AddGameModal({
   // Fetch users on mount and when modal opens
   useEffect(() => {
     if (open) {
-      fetch("/api/users")
+      console.log("Modal opened, fetching users...")
+      fetch("/api/users", {
+        method: "GET",
+        credentials: "include", // Include cookies
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
         .then((res) => {
+          console.log("Users API response status:", res.status)
           if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`)
           }
@@ -58,12 +66,23 @@ export default function AddGameModal({
         })
         .then((data) => {
           console.log("Users loaded:", data)
-          setUsers(data || [])
+          console.log("Users count:", data?.length || 0)
+          if (Array.isArray(data)) {
+            setUsers(data)
+            console.log("Users state updated with", data.length, "users")
+          } else {
+            console.error("Users data is not an array:", data)
+            setUsers([])
+          }
         })
         .catch((error) => {
           console.error("Error fetching users:", error)
-          alert("Errore nel caricamento degli utenti. Ricarica la pagina.")
+          console.error("Error details:", error.message)
+          setUsers([])
         })
+    } else {
+      // Reset users when modal closes to force refetch on next open
+      setUsers([])
     }
   }, [open])
 
@@ -187,17 +206,22 @@ export default function AddGameModal({
                   <Select
                     id={`participant-${index}`}
                     value={participant.userId}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      console.log("User selected:", e.target.value)
                       updateParticipant(index, "userId", e.target.value)
-                    }
+                    }}
                     required
                   >
-                    <option value="">Seleziona giocatore</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.username}
-                      </option>
-                    ))}
+                    <option value="">Seleziona giocatore ({users.length} disponibili)</option>
+                    {users.length === 0 ? (
+                      <option value="" disabled>Caricamento utenti...</option>
+                    ) : (
+                      users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.username}
+                        </option>
+                      ))
+                    )}
                   </Select>
                 </div>
                 <div className="flex-1 space-y-2">
