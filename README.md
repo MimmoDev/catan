@@ -4,6 +4,41 @@ App mobile-first Next.js per gestire la classifica delle partite di Catan tra am
 
 ## 🚀 Setup
 
+### Opzione 1: Docker (Consigliato)
+
+Il modo più semplice per avviare l'applicazione:
+
+```bash
+# Build e avvia con Docker Compose
+docker-compose up -d
+
+# L'app sarà disponibile su http://localhost:3000
+```
+
+**Setup iniziale dopo il primo avvio:**
+```bash
+# Crea il primo utente
+docker exec -it catan-leaderboard sh
+node scripts/create-user.js admin password123
+exit
+```
+
+**Gestione:**
+```bash
+# Vedi i logs
+docker-compose logs -f
+
+# Ferma il container
+docker-compose down
+
+# Riavvia
+docker-compose restart
+```
+
+Per maggiori dettagli, vedi [DOCKER.md](./DOCKER.md)
+
+### Opzione 2: Setup Locale
+
 1. Installa le dipendenze:
 ```bash
 npm install
@@ -22,36 +57,14 @@ Il database SQLite verrà creato in `data/catan.db`
 
 ### Opzione 1: Script Node.js
 
-Crea un file `scripts/create-user.js`:
+Lo script `scripts/create-user.js` è già incluso nel progetto.
 
-```javascript
-const bcrypt = require('bcryptjs');
-const Database = require('better-sqlite3');
-const path = require('path');
-
-const dbPath = path.join(__dirname, '../data/catan.db');
-const db = new Database(dbPath);
-
-const username = process.argv[2];
-const password = process.argv[3];
-
-if (!username || !password) {
-  console.error('Usage: node scripts/create-user.js <username> <password>');
-  process.exit(1);
-}
-
-const hashedPassword = bcrypt.hashSync(password, 10);
-
-db.prepare(`
-  INSERT INTO users (username, password, image)
-  VALUES (?, ?, NULL)
-`).run(username, hashedPassword);
-
-console.log(`Utente ${username} creato con successo!`);
-db.close();
+**Se usi Docker:**
+```bash
+docker exec -it catan-leaderboard node scripts/create-user.js mario password123
 ```
 
-Esegui:
+**Se usi setup locale:**
 ```bash
 node scripts/create-user.js mario password123
 ```
@@ -98,7 +111,12 @@ public/uploads/
 
 Dopo aver caricato l'immagine in `public/uploads/`, aggiorna il database:
 
-**Usa lo script:**
+**Se usi Docker:**
+```bash
+docker exec -it catan-leaderboard node scripts/update-user-image.js mario /uploads/mario.jpg
+```
+
+**Se usi setup locale:**
 ```bash
 node scripts/update-user-image.js mario /uploads/mario.jpg
 ```
@@ -163,14 +181,49 @@ catan/
 
 ## 🐳 Docker
 
-Vedi [DOCKER.md](./DOCKER.md) per le istruzioni complete.
+### Quick Start
 
-**Quick start:**
 ```bash
+# Avvia l'applicazione
 docker-compose up -d
+
+# L'app sarà disponibile su http://localhost:3000
 ```
 
-L'app sarà disponibile su `http://localhost:3000`
+### Comandi Utili
+
+```bash
+# Vedi i logs
+docker-compose logs -f
+
+# Entra nel container
+docker exec -it catan-leaderboard sh
+
+# Crea un utente (dal container)
+docker exec -it catan-leaderboard node scripts/create-user.js username password
+
+# Aggiorna immagine utente (dal container)
+docker exec -it catan-leaderboard node scripts/update-user-image.js username /uploads/image.jpg
+
+# Ferma il container
+docker-compose down
+
+# Riavvia
+docker-compose restart
+
+# Rebuild dopo modifiche
+docker-compose up -d --build
+```
+
+### Volumi Persistenti
+
+I seguenti dati vengono salvati sul tuo computer:
+- `./data` - Database SQLite
+- `./public/uploads` - Immagini utenti
+
+**Importante:** Carica le immagini in `./public/uploads/` sul tuo computer, non nel container!
+
+Per istruzioni dettagliate, vedi [DOCKER.md](./DOCKER.md)
 
 ## 🔐 Sicurezza
 
