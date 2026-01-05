@@ -161,6 +161,17 @@ catan/
 - `npm run start` - Avvia il server di produzione
 - `npm run db:studio` - Apri Drizzle Studio per gestire il DB
 
+## 🐳 Docker
+
+Vedi [DOCKER.md](./DOCKER.md) per le istruzioni complete.
+
+**Quick start:**
+```bash
+docker-compose up -d
+```
+
+L'app sarà disponibile su `http://localhost:3000`
+
 ## 🔐 Sicurezza
 
 - Le password sono hashate con bcrypt
