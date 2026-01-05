@@ -50,9 +50,22 @@ export default function AddGameModal({
   useEffect(() => {
     if (open) {
       console.log("Modal opened, fetching users...")
+      
+      // TEMPORARY: Hardcoded users for testing
+      const hardcodedUsers: User[] = [
+        { id: 1, username: "Soccorso" },
+        { id: 2, username: "Emidio" },
+        { id: 3, username: "Silvio" },
+        { id: 4, username: "Alfredo" },
+        { id: 5, username: "Stefano" },
+        { id: 6, username: "Rocco" },
+        { id: 7, username: "Mimmo" },
+      ]
+      
+      // Try to fetch from API first
       fetch("/api/users", {
         method: "GET",
-        credentials: "include", // Include cookies
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -65,20 +78,25 @@ export default function AddGameModal({
           return res.json()
         })
         .then((data) => {
-          console.log("Users loaded:", data)
+          console.log("Users loaded from API:", data)
           console.log("Users count:", data?.length || 0)
-          if (Array.isArray(data)) {
+          if (Array.isArray(data) && data.length > 0) {
+            // Use API data if available
             setUsers(data)
-            console.log("Users state updated with", data.length, "users")
+            console.log("Users state updated with", data.length, "users from API")
           } else {
-            console.error("Users data is not an array:", data)
-            setUsers([])
+            // Fallback to hardcoded users
+            console.log("API returned empty array, using hardcoded users")
+            setUsers(hardcodedUsers)
+            console.log("Users state updated with", hardcodedUsers.length, "hardcoded users")
           }
         })
         .catch((error) => {
           console.error("Error fetching users:", error)
           console.error("Error details:", error.message)
-          setUsers([])
+          // Fallback to hardcoded users on error
+          console.log("Using hardcoded users due to error")
+          setUsers(hardcodedUsers)
         })
     } else {
       // Reset users when modal closes to force refetch on next open
