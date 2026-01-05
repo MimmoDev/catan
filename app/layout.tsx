@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { initDb } from "@/lib/db"
+import ChunkVersionChecker from "@/components/ChunkVersionChecker"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,7 +27,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="it" className="dark">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ChunkVersionChecker />
+        {children}
+      </body>
     </html>
   )
 }
