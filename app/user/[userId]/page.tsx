@@ -82,7 +82,11 @@ export default async function UserProfilePage({
         winnerId: game.winnerId,
         winnerUsername: winner[0]?.username || "",
         location: game.location,
-        playedAt: game.playedAt,
+        playedAt: game.playedAt instanceof Date 
+          ? Math.floor(game.playedAt.getTime() / 1000)
+          : typeof game.playedAt === 'number' 
+            ? game.playedAt 
+            : 0,
       }
     })
   )
@@ -104,6 +108,11 @@ export default async function UserProfilePage({
 
       return {
         ...game,
+        playedAt: game.playedAt instanceof Date 
+          ? Math.floor(game.playedAt.getTime() / 1000)
+          : typeof game.playedAt === 'number' 
+            ? game.playedAt 
+            : 0,
         participants: participants.map((p) => ({
           ...p,
           score: Number(p.score),
