@@ -52,35 +52,89 @@ node scripts/create-user.js Username password123
 
 ## 📸 Aggiungere Immagini Utenti
 
-### 1. Carica le immagini
+### Metodo 1: Via Dokploy Terminal (Base64) - PIÙ SEMPLICE
 
-Le immagini devono essere caricate nella cartella `public/uploads/` del container.
+1. **Prepara l'immagine in base64** sul tuo computer locale:
+   ```bash
+   # Su Mac/Linux
+   base64 -i /percorso/immagine.jpg > immagine_base64.txt
+   
+   # Oppure direttamente nel terminale
+   cat /percorso/immagine.jpg | base64
+   ```
 
-**Via Dokploy Terminal:**
+2. **Nel terminale Dokploy**, vai in `/app` e crea l'immagine:
+   ```bash
+   cd /app
+   mkdir -p public/uploads
+   
+   # Incolla il base64 e decodificalo (sostituisci BASE64_CONTENT con il contenuto)
+   echo "BASE64_CONTENT" | base64 -d > public/uploads/nomefile.jpg
+   ```
+
+3. **Aggiorna il database:**
+   ```bash
+   node scripts/update-user-image.js Username /uploads/nomefile.jpg
+   ```
+
+### Metodo 2: Via Docker Volume (Se hai accesso al server)
+
+Se hai montato un volume per `public/uploads` in `docker-compose.yml` o nella configurazione Dokploy:
+
+1. **Trova il percorso del volume sul server host**
+2. **Carica le immagini direttamente** in quella cartella (via SCP, FTP, o accesso diretto)
+3. **Aggiorna il database** come sopra
+
+### Metodo 3: Via Docker Copy (Se hai accesso SSH al server)
+
 ```bash
-# Crea la cartella se non esiste
-mkdir -p public/uploads
+# Dal tuo computer locale
+docker cp /percorso/immagine.jpg <CONTAINER_NAME>:/app/public/uploads/immagine.jpg
 
-# Carica le immagini (puoi usare un tool di upload o SCP)
-# Esempio: se hai accesso SSH, puoi fare:
-# scp immagine.jpg user@server:/path/to/container/public/uploads/
+# Poi nel container
+docker exec -it <CONTAINER_NAME> sh
+cd /app
+node scripts/update-user-image.js Username /uploads/immagine.jpg
 ```
 
-**Via Docker Volume:**
-Se hai montato un volume per `public/uploads`, carica le immagini direttamente sul server nella cartella montata.
-
-### 2. Aggiorna il database
-
-Dopo aver caricato l'immagine, aggiorna il database:
+### Metodo 4: Via SCP (Se hai accesso SSH)
 
 ```bash
+# Trova il percorso del volume montato sul server
+# Poi carica via SCP
+scp immagine.jpg user@server:/path/to/volume/uploads/immagine.jpg
+
+# Poi aggiorna il database nel container
+```
+
+### ⚠️ IMPORTANTE: Aggiorna sempre il database
+
+Dopo aver caricato l'immagine, **devi sempre aggiornare il database**:
+
+```bash
+cd /app
 node scripts/update-user-image.js Username /uploads/nomefile.jpg
 ```
 
-**Esempio:**
+**Esempio completo:**
 ```bash
+cd /app
+
+# Carica immagine (metodo base64)
+echo "BASE64_CONTENT_QUI" | base64 -d > public/uploads/soccorso.jpg
+
+# Aggiorna database
 node scripts/update-user-image.js Soccorso /uploads/soccorso.jpg
 node scripts/update-user-image.js Emidio /uploads/emidio.jpeg
+node scripts/update-user-image.js Silvio /uploads/silvio.jpg
+# ... e così via
+```
+
+### 📋 Verifica le immagini caricate
+
+```bash
+cd /app
+ls -la public/uploads/
 ```
 
 ## 🔍 Verificare Utenti Esistenti
