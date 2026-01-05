@@ -77,16 +77,21 @@ export default async function UserProfilePage({
         .where(eq(users.id, game.winnerId))
         .limit(1)
 
+      // Convert playedAt to number (timestamp in seconds)
+      // Drizzle with mode: "timestamp" can return Date or number at runtime
+      const playedAtValue = game.playedAt as Date | number
+      const playedAtNumber = playedAtValue instanceof Date
+        ? Math.floor(playedAtValue.getTime() / 1000)
+        : typeof playedAtValue === 'number'
+          ? playedAtValue
+          : 0
+
       return {
         gameId: game.id,
         winnerId: game.winnerId,
         winnerUsername: winner[0]?.username || "",
         location: game.location,
-        playedAt: game.playedAt instanceof Date 
-          ? Math.floor(game.playedAt.getTime() / 1000)
-          : typeof game.playedAt === 'number' 
-            ? game.playedAt 
-            : 0,
+        playedAt: playedAtNumber,
       }
     })
   )
@@ -106,13 +111,18 @@ export default async function UserProfilePage({
         .where(eq(gameParticipants.gameId, game.gameId))
         .orderBy(desc(gameParticipants.score))
 
+      // Convert playedAt to number (timestamp in seconds)
+      // Drizzle with mode: "timestamp" can return Date or number at runtime
+      const playedAtValue = game.playedAt as Date | number
+      const playedAtNumber = playedAtValue instanceof Date
+        ? Math.floor(playedAtValue.getTime() / 1000)
+        : typeof playedAtValue === 'number'
+          ? playedAtValue
+          : 0
+
       return {
         ...game,
-        playedAt: game.playedAt instanceof Date 
-          ? Math.floor(game.playedAt.getTime() / 1000)
-          : typeof game.playedAt === 'number' 
-            ? game.playedAt 
-            : 0,
+        playedAt: playedAtNumber,
         participants: participants.map((p) => ({
           ...p,
           score: Number(p.score),
