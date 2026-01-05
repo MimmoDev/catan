@@ -42,6 +42,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy node_modules for better-sqlite3 (native module) - only production deps
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
+# Copy scripts for user management
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+
 # Create directories for data persistence
 RUN mkdir -p /app/data /app/public/uploads && \
     chown -R nextjs:nodejs /app/data /app/public/uploads

@@ -7,7 +7,11 @@ Guida per gestire l'applicazione Catan Leaderboard su Dokploy.
 ### Metodo 1: Via Terminale Dokploy (Consigliato)
 
 1. Vai su Dokploy → La tua applicazione → **Terminal** o **Shell**
-2. Esegui lo script per creare un utente:
+2. **IMPORTANTE**: Assicurati di essere nella directory `/app`:
+   ```bash
+   cd /app
+   ```
+3. Esegui lo script per creare un utente:
 
 ```bash
 node scripts/create-user.js Username password123
