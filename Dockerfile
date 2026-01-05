@@ -35,8 +35,10 @@ RUN adduser --system --uid 1001 nextjs
 # Copy necessary files from builder
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-# Copy standalone build files
+# Copy standalone build files (this includes server.js and all dependencies)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+
+# Copy static files to the correct location for standalone
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy node_modules for better-sqlite3 (native module) - only production deps
