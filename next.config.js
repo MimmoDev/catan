@@ -5,13 +5,9 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'standalone',
-  // Ensure proper asset serving
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
-  // Disable static optimization issues
-  experimental: {
-    outputFileTracingIncludes: {
-      '/': ['./data/**/*'],
-    },
+  // Generate stable build IDs to avoid chunk loading issues
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
   },
 }
 

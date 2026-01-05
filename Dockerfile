@@ -36,9 +36,12 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Copy standalone build files (this includes server.js and all dependencies)
+# The standalone folder already contains everything needed, including static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 
-# Copy static files to the correct location for standalone
+# Copy static files - standalone build expects them at .next/static relative to server.js
+# Since server.js is in .next/standalone/, static files should be in .next/standalone/.next/static
+# But Next.js standalone already includes them, so we copy to the root .next/static as fallback
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy node_modules for better-sqlite3 (native module) - only production deps
