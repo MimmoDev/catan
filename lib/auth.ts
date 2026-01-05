@@ -5,19 +5,27 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
 export async function login(username: string, password: string) {
-  const user = await db.select().from(users).where(eq(users.username, username)).limit(1);
-  
-  if (user.length === 0) {
+  try {
+    const user = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    
+    if (user.length === 0) {
+      console.log("Login failed: user not found:", username);
+      return null;
+    }
+
+    const isValid = await bcrypt.compare(password, user[0].password);
+    
+    if (!isValid) {
+      console.log("Login failed: invalid password for:", username);
+      return null;
+    }
+
+    console.log("Login successful for:", username);
+    return user[0];
+  } catch (error) {
+    console.error("Login error:", error);
     return null;
   }
-
-  const isValid = await bcrypt.compare(password, user[0].password);
-  
-  if (!isValid) {
-    return null;
-  }
-
-  return user[0];
 }
 
 export async function getCurrentUser() {

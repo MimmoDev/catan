@@ -4,19 +4,45 @@ import * as schema from "./schema";
 import path from "path";
 import fs from "fs";
 
-const dbPath = path.join(process.cwd(), "data", "catan.db");
-const dbDir = path.dirname(dbPath);
+// Function to find database path (works with standalone build)
+function getDbPath(): string {
+  // Try multiple possible database paths (for standalone build)
+  const possiblePaths = [
+    "/app/data/catan.db", // Absolute path for Docker
+    path.join(process.cwd(), "data", "catan.db"),
+    path.join(process.cwd(), "..", "data", "catan.db"),
+    path.resolve(process.cwd(), "data", "catan.db"),
+  ];
 
-// Ensure data directory exists
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
+  // First, try to find existing database
+  for (const possiblePath of possiblePaths) {
+    const resolvedPath = path.resolve(possiblePath);
+    if (fs.existsSync(resolvedPath)) {
+      console.log("Database found at:", resolvedPath);
+      return resolvedPath;
+    }
+  }
+
+  // If not found, use the first path and create it
+  const defaultPath = possiblePaths[0];
+  const resolvedPath = path.resolve(defaultPath);
+  const dbDir = path.dirname(resolvedPath);
+  
+  // Ensure data directory exists
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+
+  // Create database if it doesn't exist
+  if (!fs.existsSync(resolvedPath)) {
+    fs.writeFileSync(resolvedPath, "");
+  }
+
+  console.log("Database created/using at:", resolvedPath);
+  return resolvedPath;
 }
 
-// Create database if it doesn't exist
-if (!fs.existsSync(dbPath)) {
-  fs.writeFileSync(dbPath, "");
-}
-
+const dbPath = getDbPath();
 const sqlite = new Database(dbPath);
 export const db = drizzle(sqlite, { schema });
 
