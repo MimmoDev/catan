@@ -169,11 +169,20 @@ node scripts/delete-user.js Username
 
 ## 🔍 Verificare Utenti Esistenti
 
+### Metodo 1: Script dedicato (Consigliato)
+
 ```bash
 cd /app
+node scripts/list-users.js
+```
 
-# Controlla gli utenti nel database
-node -e "const db = require('better-sqlite3')('./data/catan.db'); console.log(db.prepare('SELECT id, username, image FROM users').all()); db.close();"
+Questo mostrerà tutti gli utenti con ID, username e immagine.
+
+### Metodo 2: Comando inline
+
+```bash
+cd /app
+node -e "const db = require('better-sqlite3')('./data/catan.db'); const users = db.prepare('SELECT id, username, image FROM users ORDER BY username').all(); console.log(users); db.close();"
 ```
 
 ## 📝 Note Importanti
