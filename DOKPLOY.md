@@ -137,9 +137,41 @@ cd /app
 ls -la public/uploads/
 ```
 
+## 🗑️ Eliminare Utenti
+
+### Via Terminale Dokploy
+
+1. Vai su Dokploy → La tua applicazione → **Terminal**
+2. **IMPORTANTE**: Assicurati di essere nella directory `/app`:
+   ```bash
+   cd /app
+   ```
+3. Esegui lo script per eliminare un utente:
+
+```bash
+node scripts/delete-user.js Username
+```
+
+**Esempio:**
+```bash
+node scripts/delete-user.js Admin
+```
+
+⚠️ **ATTENZIONE**: Eliminare un utente eliminerà anche tutte le partite vinte da quell'utente (a causa delle foreign key constraints). Se l'utente ha partecipato ad altre partite, quelle partite rimarranno ma senza il suo record di partecipazione.
+
+### Via Docker Exec
+
+```bash
+docker exec -it <CONTAINER_NAME> sh
+cd /app
+node scripts/delete-user.js Username
+```
+
 ## 🔍 Verificare Utenti Esistenti
 
 ```bash
+cd /app
+
 # Controlla gli utenti nel database
 node -e "const db = require('better-sqlite3')('./data/catan.db'); console.log(db.prepare('SELECT id, username, image FROM users').all()); db.close();"
 ```
