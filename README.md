@@ -237,3 +237,7 @@ Per istruzioni dettagliate, vedi [DOCKER.md](./DOCKER.md)
 - **Le immagini devono essere caricate manualmente in `public/uploads/`**
 - Gli utenti devono essere creati manualmente (vedi sezione Registrazione Utenti)
 - Tema scuro attivo di default
+
+## 🚀 Deploy su Dokploy
+
+Vedi [DOKPLOY.md](./DOKPLOY.md) per le istruzioni complete su come gestire utenti e immagini dopo il deploy.
