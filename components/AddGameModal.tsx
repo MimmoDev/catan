@@ -46,13 +46,26 @@ export default function AddGameModal({
     { userId: "", score: "" },
   ])
 
-  // Fetch users on mount
+  // Fetch users on mount and when modal opens
   useEffect(() => {
-    fetch("/api/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch(console.error)
-  }, [])
+    if (open) {
+      fetch("/api/users")
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`)
+          }
+          return res.json()
+        })
+        .then((data) => {
+          console.log("Users loaded:", data)
+          setUsers(data || [])
+        })
+        .catch((error) => {
+          console.error("Error fetching users:", error)
+          alert("Errore nel caricamento degli utenti. Ricarica la pagina.")
+        })
+    }
+  }, [open])
 
   const addParticipant = () => {
     setParticipants([...participants, { userId: "", score: "" }])
