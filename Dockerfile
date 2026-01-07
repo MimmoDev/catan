@@ -40,12 +40,13 @@ RUN mkdir -p /app/public
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Copy standalone build files (this includes server.js and all dependencies)
-# The standalone folder already contains everything needed, including static files
+# When copying .next/standalone to ./, the contents go to the root
+# So server.js ends up at ./server.js, not ./.next/standalone/server.js
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 
 # Copy static files - standalone build expects them at .next/static relative to server.js
-# Since server.js is in .next/standalone/, static files should be in .next/standalone/.next/static
-# But Next.js standalone already includes them, so we copy to the root .next/static as fallback
+# Since server.js is now at root, static files should be at .next/static
+RUN mkdir -p /app/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Copy node_modules for better-sqlite3 (native module) - only production deps
@@ -65,5 +66,5 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", ".next/standalone/server.js"]
+CMD ["node", "server.js"]
 
