@@ -31,12 +31,14 @@ interface RecentGame {
 
 interface HomeClientProps {
   user: User
+  users: User[]
   leaderboard: LeaderboardEntry[]
   recentGames: RecentGame[]
 }
 
 export default function HomeClient({
   user,
+  users,
   leaderboard,
   recentGames,
 }: HomeClientProps) {
@@ -76,6 +78,7 @@ export default function HomeClient({
           open={modalOpen}
           onOpenChange={setModalOpen}
           currentUserId={user.id}
+          users={users}
         />
       </div>
     </div>

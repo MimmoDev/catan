@@ -88,9 +88,16 @@ export default async function Home() {
     .orderBy(desc(games.playedAt))
     .limit(10)
 
+  // Get all users for the dropdown (same as leaderboard)
+  const allUsersForDropdown = allUsers.map(u => ({
+    id: u.id,
+    username: u.username,
+  }))
+
   return (
     <HomeClient
       user={user}
+      users={allUsersForDropdown}
       leaderboard={leaderboard.map(u => ({
         ...u,
         wins: Number(u.wins || 0),

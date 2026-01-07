@@ -28,12 +28,14 @@ interface AddGameModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentUserId: number
+  users: User[]
 }
 
 export default function AddGameModal({
   open,
   onOpenChange,
   currentUserId,
+  users,
 }: AddGameModalProps) {
   const router = useRouter()
   const [location, setLocation] = useState("")
@@ -41,55 +43,9 @@ export default function AddGameModal({
     new Date().toISOString().slice(0, 16)
   )
   const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState<User[]>([])
   const [participants, setParticipants] = useState<Participant[]>([
     { userId: "", score: "" },
   ])
-
-  // Fetch users from database when modal opens
-  useEffect(() => {
-    if (open) {
-      console.log("Modal opened, fetching users from database...")
-      
-      fetch("/api/users", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => {
-          console.log("Users API response status:", res.status)
-          if (!res.ok) {
-            throw new Error(`HTTP error! status: ${res.status}`)
-          }
-          return res.json()
-        })
-        .then((data) => {
-          console.log("Users loaded from API:", data)
-          console.log("Users count:", data?.length || 0)
-          if (Array.isArray(data)) {
-            setUsers(data)
-            console.log("Users state updated with", data.length, "users from database")
-            if (data.length === 0) {
-              console.warn("Nessun utente trovato nel database. Crea almeno un utente.")
-            }
-          } else {
-            console.error("Invalid response format:", data)
-            setUsers([])
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching users:", error)
-          console.error("Error details:", error.message)
-          setUsers([])
-          alert("Errore nel caricamento degli utenti. Verifica che il database sia configurato correttamente.")
-        })
-    } else {
-      // Reset users when modal closes to force refetch on next open
-      setUsers([])
-    }
-  }, [open])
 
   const addParticipant = () => {
     setParticipants([...participants, { userId: "", score: "" }])
