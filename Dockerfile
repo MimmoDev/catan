@@ -11,6 +11,8 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+# Ensure public directory exists
+RUN mkdir -p /app/public
 COPY . .
 
 # Set environment variables for build
@@ -33,6 +35,8 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy necessary files from builder
+# Create public directory first, then copy if it exists
+RUN mkdir -p /app/public
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Copy standalone build files (this includes server.js and all dependencies)
