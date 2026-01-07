@@ -28,8 +28,8 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Install sqlite for better-sqlite3
-RUN apk add --no-cache sqlite libc6-compat
+# Install sqlite for better-sqlite3 and bash for terminal access
+RUN apk add --no-cache sqlite libc6-compat bash
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
