@@ -40,6 +40,9 @@ docker exec -it catan-leaderboard node scripts/create-user.js admin password123
 Quando fai `git pull` per aggiornare il codice:
 
 ```bash
+# ⚠️ IMPORTANTE: Fai backup del database prima!
+cp ./data/catan.db ./data/catan.db.backup
+
 # Ferma il container
 docker-compose down
 
@@ -50,7 +53,9 @@ git pull
 docker-compose up -d --build
 ```
 
-**Il database e le immagini vengono preservati automaticamente** grazie ai volumi Docker.
+**Il database e le immagini vengono preservati automaticamente** grazie ai volumi Docker, **MA** è sempre meglio fare un backup prima!
+
+📖 Vedi [BACKUP.md](./BACKUP.md) per istruzioni dettagliate su backup e ripristino.
 
 ## 📦 Setup Locale (senza Docker)
 
