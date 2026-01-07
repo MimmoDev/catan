@@ -46,23 +46,11 @@ export default function AddGameModal({
     { userId: "", score: "" },
   ])
 
-  // Fetch users on mount and when modal opens
+  // Fetch users from database when modal opens
   useEffect(() => {
     if (open) {
-      console.log("Modal opened, fetching users...")
+      console.log("Modal opened, fetching users from database...")
       
-      // TEMPORARY: Hardcoded users for testing
-      const hardcodedUsers: User[] = [
-        { id: 1, username: "Soccorso" },
-        { id: 2, username: "Emidio" },
-        { id: 3, username: "Silvio" },
-        { id: 4, username: "Alfredo" },
-        { id: 5, username: "Stefano" },
-        { id: 6, username: "Rocco" },
-        { id: 7, username: "Mimmo" },
-      ]
-      
-      // Try to fetch from API first
       fetch("/api/users", {
         method: "GET",
         credentials: "include",
@@ -80,23 +68,22 @@ export default function AddGameModal({
         .then((data) => {
           console.log("Users loaded from API:", data)
           console.log("Users count:", data?.length || 0)
-          if (Array.isArray(data) && data.length > 0) {
-            // Use API data if available
+          if (Array.isArray(data)) {
             setUsers(data)
-            console.log("Users state updated with", data.length, "users from API")
+            console.log("Users state updated with", data.length, "users from database")
+            if (data.length === 0) {
+              console.warn("Nessun utente trovato nel database. Crea almeno un utente.")
+            }
           } else {
-            // Fallback to hardcoded users
-            console.log("API returned empty array, using hardcoded users")
-            setUsers(hardcodedUsers)
-            console.log("Users state updated with", hardcodedUsers.length, "hardcoded users")
+            console.error("Invalid response format:", data)
+            setUsers([])
           }
         })
         .catch((error) => {
           console.error("Error fetching users:", error)
           console.error("Error details:", error.message)
-          // Fallback to hardcoded users on error
-          console.log("Using hardcoded users due to error")
-          setUsers(hardcodedUsers)
+          setUsers([])
+          alert("Errore nel caricamento degli utenti. Verifica che il database sia configurato correttamente.")
         })
     } else {
       // Reset users when modal closes to force refetch on next open
