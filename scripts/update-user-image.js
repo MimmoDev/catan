@@ -44,3 +44,4 @@ db.prepare(`
 console.log(`✅ Immagine aggiornata per ${username}: ${imagePath}`);
 db.close();
 
+

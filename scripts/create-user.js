@@ -44,3 +44,4 @@ db.prepare(`
 console.log(`✅ Utente ${username} creato con successo!`);
 db.close();
 
+

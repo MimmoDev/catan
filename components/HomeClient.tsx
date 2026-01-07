@@ -15,6 +15,7 @@ interface LeaderboardEntry {
   username: string
   image: string | null
   wins: number
+  totalGames: number
   totalScore: number
   lastWin: number | null
 }

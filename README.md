@@ -2,148 +2,156 @@
 
 App mobile-first Next.js per gestire la classifica delle partite di Catan tra amici.
 
-## 🚀 Setup
+## 📋 Requisiti
 
-### Opzione 1: Docker (Consigliato)
+- Docker e Docker Compose (consigliato)
+- Oppure Node.js 20+ e npm
 
-Il modo più semplice per avviare l'applicazione:
+## 🚀 Quick Start con Docker
+
+### 1. Clona il repository
 
 ```bash
-# Build e avvia con Docker Compose
+git clone https://github.com/MimmoDev/catan.git
+cd catan
+```
+
+### 2. Avvia l'applicazione
+
+```bash
 docker-compose up -d
-
-# L'app sarà disponibile su http://localhost:3000
 ```
 
-**Setup iniziale dopo il primo avvio:**
+L'app sarà disponibile su **http://localhost:3000**
+
+### 3. Crea il primo utente
+
 ```bash
-# Crea il primo utente
-docker exec -it catan-leaderboard sh
-node scripts/create-user.js admin password123
-exit
+docker exec -it catan-leaderboard node scripts/create-user.js admin password123
 ```
 
-**Gestione:**
-```bash
-# Vedi i logs
-docker-compose logs -f
+### 4. Accedi all'app
 
+- Username: `admin`
+- Password: `password123`
+
+## 🔄 Aggiornare l'applicazione
+
+Quando fai `git pull` per aggiornare il codice:
+
+```bash
 # Ferma il container
 docker-compose down
 
-# Riavvia
-docker-compose restart
+# Pull del nuovo codice
+git pull
+
+# Ricostruisci e riavvia
+docker-compose up -d --build
 ```
 
-Per maggiori dettagli, vedi [DOCKER.md](./DOCKER.md)
+**Il database e le immagini vengono preservati automaticamente** grazie ai volumi Docker.
 
-### Opzione 2: Setup Locale
+## 📦 Setup Locale (senza Docker)
 
-1. Installa le dipendenze:
+### 1. Installa le dipendenze
+
 ```bash
 npm install
 ```
 
-2. Inizializza il database (viene creato automaticamente al primo avvio):
+### 2. Avvia il server di sviluppo
+
 ```bash
 npm run dev
 ```
 
-Il database SQLite verrà creato in `data/catan.db`
+Il database SQLite verrà creato automaticamente in `data/catan.db`
 
-## 👥 Registrazione Utenti
+### 3. Crea un utente
 
-**Non c'è interfaccia di registrazione**. Gli utenti devono essere registrati manualmente nel database.
-
-### Opzione 1: Script Node.js
-
-Lo script `scripts/create-user.js` è già incluso nel progetto.
-
-**Se usi Docker:**
 ```bash
-docker exec -it catan-leaderboard node scripts/create-user.js mario password123
+node scripts/create-user.js admin password123
 ```
 
-**Se usi setup locale:**
+## 👥 Gestione Utenti
+
+### Creare un utente
+
+**Con Docker:**
 ```bash
-node scripts/create-user.js mario password123
+docker exec -it catan-leaderboard node scripts/create-user.js username password
 ```
 
-### Opzione 2: SQL diretto
-
-Puoi inserire direttamente nel database usando un tool SQLite:
-
-```sql
--- Hash della password "password123" (usa bcrypt per generare il tuo)
-INSERT INTO users (username, password, image) 
-VALUES ('mario', '$2a$10$...', NULL);
+**Senza Docker:**
+```bash
+node scripts/create-user.js username password
 ```
 
-## 📸 Gestione Immagini Utenti
+### Elencare tutti gli utenti
 
-### ⬇️ DOVE CARICARE LE IMMAGINI
-
-**Le immagini degli utenti vanno caricate nella cartella:**
-```
-public/uploads/
+**Con Docker:**
+```bash
+docker exec -it catan-leaderboard node scripts/list-users.js
 ```
 
-**Percorso completo:**
+**Senza Docker:**
+```bash
+node scripts/list-users.js
 ```
-/Users/domenico/Desktop/catan/public/uploads/
+
+### Eliminare un utente
+
+**Con Docker:**
+```bash
+docker exec -it catan-leaderboard node scripts/delete-user.js username
 ```
 
-### Formato immagini
+**Senza Docker:**
+```bash
+node scripts/delete-user.js username
+```
 
-- **Nome file**: suggerisco di usare lo username (es: `mario.jpg`, `luigi.png`, `soccorso.jpg`)
-- **Formato**: JPG, PNG, WebP
-- **Dimensione consigliata**: 200x200px (verranno mostrate come 48x48px nella classifica)
-- **Esempio nomi file**:
-  - `soccorso.jpg`
-  - `emidio.png`
-  - `silvio.jpg`
-  - `alfredo.png`
-  - `stefano.jpg`
-  - `rocco.png`
-  - `mimmo.jpg`
+## 📸 Gestione Immagini Profilo
 
-### Aggiornare il database con l'immagine
+### 1. Carica l'immagine
 
-Dopo aver caricato l'immagine in `public/uploads/`, aggiorna il database:
+Carica l'immagine nella cartella `public/uploads/` con il nome dell'utente:
 
-**Se usi Docker:**
+```
+public/uploads/mario.jpg
+public/uploads/luigi.png
+```
+
+### 2. Aggiorna il database
+
+**Con Docker:**
 ```bash
 docker exec -it catan-leaderboard node scripts/update-user-image.js mario /uploads/mario.jpg
 ```
 
-**Se usi setup locale:**
+**Senza Docker:**
 ```bash
 node scripts/update-user-image.js mario /uploads/mario.jpg
 ```
 
-**Oppure SQL diretto:**
-```sql
-UPDATE users 
-SET image = '/uploads/mario.jpg' 
-WHERE username = 'mario';
-```
+### Formato immagini consigliato
 
-### Esempio completo
-
-1. Carica `soccorso.jpg` in `public/uploads/soccorso.jpg`
-2. Esegui: `node scripts/update-user-image.js Soccorso /uploads/soccorso.jpg`
-3. L'immagine apparirà nella classifica!
+- **Dimensione**: 200x200px (vengono mostrate come 48x48px)
+- **Formato**: JPG, PNG, WebP
+- **Nome file**: Usa lo username (es: `mario.jpg`)
 
 ## 🎮 Funzionalità
 
-- ✅ Login utenti
-- ✅ Aggiunta partite vinte (vincitore, sede, data/ora)
-- ✅ Aggiunta partecipanti con punteggi
-- ✅ Classifica aggiornata automaticamente (vittorie + punteggio totale)
-- ✅ Visualizzazione partite recenti
-- ✅ Supporto immagini profilo
-- ✅ Design mobile-first con shadcn/ui
-- ✅ Tema scuro (nero/grigio)
+- ✅ **Login utenti** - Autenticazione sicura con bcrypt
+- ✅ **Classifica** - Ordine per vittorie e punteggio totale
+- ✅ **Counter partite** - Visualizza il numero totale di partite per ogni giocatore
+- ✅ **Aggiunta partite** - Modal con partecipanti e punteggi
+- ✅ **Profilo utente** - Storico completo delle partite con dettagli
+- ✅ **Eliminazione partite** - Con conferma
+- ✅ **Immagini profilo** - Supporto per foto utente
+- ✅ **Design mobile-first** - Ottimizzato per smartphone
+- ✅ **Tema scuro** - Interfaccia nero/grigio
 
 ## 📁 Struttura Progetto
 
@@ -151,8 +159,8 @@ WHERE username = 'mario';
 catan/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API routes
-│   ├── leaderboard/       # Redirect alla home
-│   └── page.tsx           # Pagina home/login
+│   ├── user/              # Pagine profilo utente
+│   └── page.tsx           # Home/Login/Leaderboard
 ├── components/            # Componenti React
 │   ├── ui/               # Componenti shadcn/ui
 │   ├── AddGameModal.tsx  # Modale aggiunta partita
@@ -164,46 +172,30 @@ catan/
 │   ├── auth.ts           # Autenticazione
 │   └── utils.ts          # Utilities
 ├── public/
-│   └── uploads/          # ⬅️ CARICA QUI LE IMMAGINI UTENTI
+│   └── uploads/          # ⬅️ CARICA QUI LE IMMAGINI
 ├── scripts/              # Script utility
 │   ├── create-user.js
+│   ├── delete-user.js
+│   ├── list-users.js
 │   └── update-user-image.js
-└── data/                 # Database SQLite (auto-generato)
-    └── catan.db
+├── data/                 # Database SQLite (auto-generato)
+│   └── catan.db
+├── Dockerfile
+├── docker-compose.yml
+└── package.json
 ```
 
-## 🔧 Script Disponibili
-
-- `npm run dev` - Avvia il server di sviluppo
-- `npm run build` - Build per produzione
-- `npm run start` - Avvia il server di produzione
-- `npm run db:studio` - Apri Drizzle Studio per gestire il DB
-
-## 🐳 Docker
-
-### Quick Start
+## 🐳 Docker - Comandi Utili
 
 ```bash
 # Avvia l'applicazione
 docker-compose up -d
 
-# L'app sarà disponibile su http://localhost:3000
-```
-
-### Comandi Utili
-
-```bash
 # Vedi i logs
 docker-compose logs -f
 
 # Entra nel container
 docker exec -it catan-leaderboard sh
-
-# Crea un utente (dal container)
-docker exec -it catan-leaderboard node scripts/create-user.js username password
-
-# Aggiorna immagine utente (dal container)
-docker exec -it catan-leaderboard node scripts/update-user-image.js username /uploads/image.jpg
 
 # Ferma il container
 docker-compose down
@@ -211,33 +203,98 @@ docker-compose down
 # Riavvia
 docker-compose restart
 
-# Rebuild dopo modifiche
+# Rebuild dopo modifiche al codice
 docker-compose up -d --build
 ```
 
-### Volumi Persistenti
+## 💾 Persistenza Dati
 
-I seguenti dati vengono salvati sul tuo computer:
-- `./data` - Database SQLite
-- `./public/uploads` - Immagini utenti
+I seguenti dati vengono salvati sul tuo computer (volumi Docker):
 
-**Importante:** Carica le immagini in `./public/uploads/` sul tuo computer, non nel container!
+- `./data/` - Database SQLite (`catan.db`)
+- `./public/uploads/` - Immagini profilo utenti
 
-Per istruzioni dettagliate, vedi [DOCKER.md](./DOCKER.md)
+**Importante:** 
+- Il database viene preservato durante gli aggiornamenti
+- Le immagini devono essere caricate in `./public/uploads/` sul tuo computer
+- I volumi Docker garantiscono che i dati non vengano persi quando aggiorni il codice
+
+## 🔧 Script Disponibili
+
+```bash
+# Sviluppo
+npm run dev          # Avvia server di sviluppo
+npm run build        # Build per produzione
+npm run start        # Avvia server di produzione
+npm run lint         # Lint del codice
+
+# Database
+npm run db:generate  # Genera migrazioni Drizzle
+npm run db:migrate   # Esegue migrazioni
+npm run db:studio    # Apre Drizzle Studio
+```
 
 ## 🔐 Sicurezza
 
-- Le password sono hashate con bcrypt
-- Le sessioni sono gestite tramite cookie httpOnly
-- Autenticazione richiesta per aggiungere partite
+- Password hashate con bcrypt
+- Sessioni gestite tramite cookie httpOnly
+- Autenticazione richiesta per tutte le operazioni
+- Validazione input con Zod
 
-## 📝 Note
+## 📝 Note Importanti
 
-- Il database viene inizializzato automaticamente al primo avvio
-- **Le immagini devono essere caricate manualmente in `public/uploads/`**
-- Gli utenti devono essere creati manualmente (vedi sezione Registrazione Utenti)
-- Tema scuro attivo di default
+1. **Nessuna interfaccia di registrazione** - Gli utenti devono essere creati manualmente
+2. **Database auto-inizializzato** - Viene creato automaticamente al primo avvio
+3. **Immagini manuali** - Le immagini devono essere caricate manualmente in `public/uploads/`
+4. **Tema scuro** - Attivo di default
+5. **Mobile-first** - Ottimizzato per smartphone
 
-## 🚀 Deploy su Dokploy
+## 🚀 Deploy
 
-Vedi [DOKPLOY.md](./DOKPLOY.md) per le istruzioni complete su come gestire utenti e immagini dopo il deploy.
+### Dokploy / VPS
+
+1. Clona il repository sul server
+2. Configura Docker Compose
+3. Avvia con `docker-compose up -d`
+4. Crea utenti con gli script
+
+### Variabili d'ambiente
+
+Nessuna variabile d'ambiente richiesta. Il database viene creato automaticamente.
+
+## 🐛 Troubleshooting
+
+### Problema: Pagina bianca dopo il login
+
+**Soluzione:** Pulisci la cache del browser o fai un hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+
+### Problema: Database non trovato
+
+**Soluzione:** Assicurati che la cartella `data/` esista e abbia i permessi corretti
+
+### Problema: Immagini non visibili
+
+**Soluzione:** 
+1. Verifica che le immagini siano in `public/uploads/`
+2. Controlla il percorso nel database con `node scripts/check-images.js`
+3. Assicurati che il percorso inizi con `/uploads/`
+
+### Problema: Utenti non appaiono nel dropdown
+
+**Soluzione:** 
+1. Verifica che gli utenti esistano: `node scripts/list-users.js`
+2. Controlla i log del server per errori
+3. Riavvia il container: `docker-compose restart`
+
+## 📄 Licenza
+
+Questo progetto è privato e riservato.
+
+## 👨‍💻 Sviluppatore
+
+Creato per gestire le partite di Catan tra amici.
+
+---
+
+**Versione:** 1.0.0  
+**Ultimo aggiornamento:** 2024

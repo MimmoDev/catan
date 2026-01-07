@@ -36,6 +36,11 @@ export default async function Home() {
         .from(games)
         .where(eq(games.winnerId, user.id))
       
+      const totalGamesResult = await db
+        .select({ count: sql<number>`COUNT(DISTINCT ${gameParticipants.gameId})` })
+        .from(gameParticipants)
+        .where(eq(gameParticipants.userId, user.id))
+      
       const scoreResult = await db
         .select({ total: sql<number>`COALESCE(SUM(${gameParticipants.score}), 0)` })
         .from(gameParticipants)
@@ -55,6 +60,7 @@ export default async function Home() {
         username: user.username,
         image: user.image,
         wins: Number(winsResult[0]?.count || 0),
+        totalGames: Number(totalGamesResult[0]?.count || 0),
         totalScore: totalScore,
         lastWin: lastWinResult[0]?.lastWin ? Number(lastWinResult[0].lastWin) : null,
       }

@@ -94,3 +94,4 @@ node scripts/create-user.js username password
 - Le immagini vanno caricate nella cartella `public/uploads` sul host
 - Per aggiornare l'app: `docker-compose up -d --build`
 
+

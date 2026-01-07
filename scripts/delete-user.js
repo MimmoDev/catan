@@ -35,3 +35,4 @@ db.prepare('DELETE FROM users WHERE username = ?').run(username);
 console.log(`✅ Utente ${username} eliminato con successo!`);
 db.close();
 
+

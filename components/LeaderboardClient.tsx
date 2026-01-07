@@ -11,6 +11,7 @@ interface LeaderboardEntry {
   username: string
   image: string | null
   wins: number
+  totalGames: number
   totalScore: number
   lastWin: number | null
 }
@@ -81,6 +82,11 @@ export default function LeaderboardClient({
                   </Link>
                   <div className="text-sm text-muted-foreground">
                     {entry.wins} {entry.wins === 1 ? "vittoria" : "vittorie"}
+                    {entry.totalGames > 0 && (
+                      <span className="ml-2">
+                        • {entry.totalGames} {entry.totalGames === 1 ? "partita" : "partite"}
+                      </span>
+                    )}
                     {entry.lastWin && (
                       <span className="ml-2">
                         • Ultima: {formatDate(entry.lastWin)}

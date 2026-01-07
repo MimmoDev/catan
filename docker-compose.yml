@@ -9,13 +9,14 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Persist database
+      # Persist database - IMPORTANT: This preserves data during updates
       - ./data:/app/data
-      # Persist uploaded images
+      # Persist uploaded images - IMPORTANT: This preserves images during updates
       - ./public/uploads:/app/public/uploads
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - NEXT_TELEMETRY_DISABLED=1
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
@@ -23,4 +24,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    # Ensure data directories exist
+    command: sh -c "mkdir -p /app/data /app/public/uploads && node .next/standalone/server.js"
 
