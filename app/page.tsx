@@ -94,6 +94,7 @@ export default async function Home() {
       leaderboard={leaderboard.map(u => ({
         ...u,
         wins: Number(u.wins || 0),
+        totalGames: Number(u.totalGames || 0),
         totalScore: Number(u.totalScore || 0),
         lastWin: u.lastWin ? Number(u.lastWin) : null,
       }))}
