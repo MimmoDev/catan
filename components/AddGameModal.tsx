@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { toLocalDatetimeInput } from "@/lib/utils"
 import { Plus, X } from "lucide-react"
 
 interface User {
@@ -39,9 +40,7 @@ export default function AddGameModal({
 }: AddGameModalProps) {
   const router = useRouter()
   const [location, setLocation] = useState("")
-  const [playedAt, setPlayedAt] = useState(
-    new Date().toISOString().slice(0, 16)
-  )
+  const [playedAt, setPlayedAt] = useState(toLocalDatetimeInput())
   const [loading, setLoading] = useState(false)
   const [participants, setParticipants] = useState<Participant[]>([
     { userId: "", score: "" },
@@ -102,7 +101,7 @@ export default function AddGameModal({
 
       // Reset form
       setLocation("")
-      setPlayedAt(new Date().toISOString().slice(0, 16))
+      setPlayedAt(toLocalDatetimeInput())
       setParticipants([{ userId: "", score: "" }])
       onOpenChange(false)
       router.refresh()

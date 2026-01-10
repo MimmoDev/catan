@@ -19,10 +19,11 @@ cd catan
 ### 2. Avvia l'applicazione
 
 ```bash
-docker-compose up -d
+# Porta configurabile (default 3000)
+HOST_PORT=3000 docker-compose up -d
 ```
 
-L'app sarà disponibile su **http://localhost:3000**
+L'app sarà disponibile su **http://localhost:3000** (o sulla porta impostata in `HOST_PORT`).
 
 ### 3. Crea il primo utente
 

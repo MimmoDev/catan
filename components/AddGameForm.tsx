@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { toLocalDatetimeInput } from "@/lib/utils"
 import { Plus } from "lucide-react"
 
 interface User {
@@ -22,9 +23,7 @@ export default function AddGameForm({ currentUserId }: AddGameFormProps) {
   const router = useRouter()
   const [winnerId, setWinnerId] = useState("")
   const [location, setLocation] = useState("")
-  const [playedAt, setPlayedAt] = useState(
-    new Date().toISOString().slice(0, 16)
-  )
+  const [playedAt, setPlayedAt] = useState(toLocalDatetimeInput())
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState<User[]>([])
 
@@ -58,7 +57,7 @@ export default function AddGameForm({ currentUserId }: AddGameFormProps) {
       // Reset form
       setWinnerId("")
       setLocation("")
-      setPlayedAt(new Date().toISOString().slice(0, 16))
+      setPlayedAt(toLocalDatetimeInput())
       router.refresh()
     } catch (err) {
       console.error(err)

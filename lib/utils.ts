@@ -18,4 +18,10 @@ export function formatDate(date: Date | number): string {
   }).format(date);
 }
 
+export function toLocalDatetimeInput(date: Date = new Date()): string {
+  const offsetMs = date.getTimezoneOffset() * 60000;
+  const localDate = new Date(date.getTime() - offsetMs);
+  return localDate.toISOString().slice(0, 16);
+}
+
 
