@@ -10,9 +10,9 @@ services:
       - "${HOST_PORT:-3000}:3000"
     volumes:
       # Persist database - IMPORTANT: This preserves data during updates
-      - ./data:/app/data
+      - catan_data:/app/data
       # Persist uploaded images - IMPORTANT: This preserves images during updates
-      - ./public/uploads:/app/public/uploads
+      - catan_uploads:/app/public/uploads
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -26,4 +26,8 @@ services:
       start_period: 40s
     # Ensure data directories exist
     command: sh -c "mkdir -p /app/data /app/public/uploads && node server.js"
+
+volumes:
+  catan_data:
+  catan_uploads:
 
