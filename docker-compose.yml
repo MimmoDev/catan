@@ -25,5 +25,5 @@ services:
       retries: 3
       start_period: 40s
     # Ensure data directories exist
-    command: sh -c "mkdir -p /app/data /app/public/uploads && node .next/standalone/server.js"
+    command: sh -c "mkdir -p /app/data /app/public/uploads && node server.js"
 
